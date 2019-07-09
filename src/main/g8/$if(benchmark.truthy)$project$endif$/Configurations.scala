@@ -5,10 +5,10 @@ import scala.sys.process._
 
 object Configurations {
 
-  val Benchmark = Configuration.of("Benchmark", "bench") extend Runtime
+  val Benchmark = config("Benchmark", "bench") extend Runtime
 
   lazy val benchmarkSettings =
-    inConfig(Benchmark)(Defaults.compileSettings) ++
+    inConfig(Benchmark)(Defaults.configSettings) ++
       Seq(
         fork in Benchmark := false,
         parallelExecution in Benchmark := false,
