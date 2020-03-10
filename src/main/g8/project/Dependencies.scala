@@ -2,11 +2,20 @@ import sbt._
 
 object Dependencies {
 
+  $if(benchmark.truthy) $
   private val AllTest = "test$if(it_test.truthy)$,it$endif$"
+  $endif$
 
-  private lazy val ScalaTestVersion = "3.0.5"
-  private lazy val MockitoVersion = "2.23.4"
+  object Versions {
+    lazy val Scala            = "$scala_version$"
+    lazy val ScalaTestVersion = "3.1.1"
+  }
 
-  lazy val scalaTest = "org.scalatest" %% "scalatest" % ScalaTestVersion % AllTest
-  lazy val mockito = "org.mockito" % "mockito-core" % MockitoVersion % AllTest
+  lazy val prodDeps: Seq[ModuleID] = Seq(
+
+  )
+
+  lazy val testDeps: Seq[ModuleID] = Seq(
+    "org.scalatest" %% "scalatest" % Versions.ScalaTestVersion
+  ).map(_ % $if(benchmark.truthy) $AllTest$else$Test$endif$)
 }

@@ -3,25 +3,52 @@ $if(benchmark.truthy)$
 import Configurations._
 $endif$
 
-organization := "$organization$"
+lazy val compileSettings = Seq(
+  Compile / compile := (Compile / compile)
+    .dependsOn(
+      Compile / scalafmtSbt,
+      Compile / scalafmtAll
+    )
+    .value,
+  scalacOptions ++= Seq(
+    "-deprecation",
+    "-encoding",
+    "utf8",
+    "-Xlint:missing-interpolator",
+    "-Xlint:private-shadow",
+    "-Xlint:type-parameter-shadow",
+    "-Ywarn-dead-code",
+    "-Ywarn-unused"
+  ),
+  scalacOptions -= "-Xfatal-warnings",
+  scalaVersion := Versions.Scala
+)
 
-name := "$name$"
+lazy val dependenciesSettings = Seq(
+  libraryDependencies ++= prodDeps ++ testDeps
+)
 
-scalaVersion := "2.12.6"
-
-libraryDependencies ++= Seq(scalaTest, mockito)
-
-scalacOptions in Compile := Seq("-deprecation")
+lazy val testSettings = Seq(
+  Test / logBuffered := false,
+  Test / parallelExecution := false
+)
 
 lazy val $name;format="camel"$ = (project in file("."))
-$if(it_test.truthy)$
-    .configs(IntegrationTest)
-    .settings(Defaults.itSettings)
-$endif$
-$if(benchmark.truthy)$
-    .configs(Benchmark)
-    .settings(benchmarkSettings)
-$endif$
+  .settings(
+    name := "$name$",
+    organization := "$organization$"
+  )
+  .settings(compileSettings: _*)
+  .settings(dependenciesSettings: _*)
+  .settings(testSettings: _*)
+  $if(it_test.truthy)$
+  .configs(IntegrationTest)
+  .settings(Defaults.itSettings)
+  $endif$
+  $if(benchmark.truthy)$
+  .configs(Benchmark)
+  .settings(benchmarkSettings)
+  $endif$
 
 $if(benchmark.truthy)$
 addCommandAlias("bench", ";bench:run")
